@@ -17,7 +17,7 @@
     }
 
     header {
-      background: #8474e4;  /* Updated color */
+      background: #8474e4;
       color: white;
       padding: 1rem 2rem;
       font-size: 1.5rem;
@@ -55,9 +55,9 @@
     #chatbotContainer {
       display: flex;
       justify-content: center;
+      align-items: center;
       padding: 2rem;
       min-height: 300px;
-      align-items: center;
       background: #fff;
       position: relative;
     }
@@ -67,22 +67,11 @@
       max-width: 600px;
       height: 600px;
       border-radius: 8px;
+      display: none;
     }
 
-    .loading-spinner {
-      position: absolute;
-      border: 4px solid #f3f3f3; /* Light grey */
-      border-top: 4px solid #3498db; /* Blue */
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 2s linear infinite;
-    }
-
-    /* Animation for loading spinner */
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    zapier-interfaces-chatbot-embed.active {
+      display: block;
     }
 
     @media (max-width: 600px) {
@@ -102,51 +91,53 @@
   <header>OneVoice - Agent Chatbot Dashboard</header>
 
   <div class="tabs">
-    <div class="tab active" onclick="loadBot('bb', this)">BannerBuzz - BB</div>
-    <div class="tab" onclick="loadBot('bos', this)">BestOfSigns - BOS</div>
-    <div class="tab" onclick="loadBot('cov', this)">Covers&All - COV</div>
+    <div class="tab active" onclick="switchBot('bb', this)">BannerBuzz - BB</div>
+    <div class="tab" onclick="switchBot('bos', this)">BestOfSigns - BOS</div>
+    <div class="tab" onclick="switchBot('cov', this)">Covers&All - COV</div>
   </div>
 
   <div id="chatbotContainer">
-    <!-- Chatbot will load here -->
-    <div class="loading-spinner" id="loadingSpinner" style="display: none;"></div>
+    <!-- All bots preloaded, but only one is shown at a time -->
+    <zapier-interfaces-chatbot-embed
+      id="bot-bb"
+      chatbot-id="cm8qsjz4z0093hn60mlmystog"
+      is-popup="false"
+      class="active">
+    </zapier-interfaces-chatbot-embed>
+
+    <zapier-interfaces-chatbot-embed
+      id="bot-bos"
+      chatbot-id="cm8qyffrq006tyl60vb7qq6u5"
+      is-popup="false">
+    </zapier-interfaces-chatbot-embed>
+
+    <zapier-interfaces-chatbot-embed
+      id="bot-cov"
+      chatbot-id="cm8qy9yth00125pb7w259dnug"
+      is-popup="false">
+    </zapier-interfaces-chatbot-embed>
   </div>
 
   <script>
-    const chatbotContainer = document.getElementById("chatbotContainer");
-    const loadingSpinner = document.getElementById("loadingSpinner");
-
+    const tabs = document.querySelectorAll('.tab');
     const bots = {
-      bb: "cm8qsjz4z0093hn60mlmystog",  // Replace with your actual Bot ID from Zapier
-      bos: "cm8qyffrq006tyl60vb7qq6u5", // Replace with your actual Bot ID from Zapier
-      cov: "cm8qy9yth00125pb7w259dnug"  // Replace with your actual Bot ID from Zapier
+      bb: document.getElementById('bot-bb'),
+      bos: document.getElementById('bot-bos'),
+      cov: document.getElementById('bot-cov')
     };
 
-    function loadBot(botKey, el) {
-      // Switch tab highlight
-      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+    function switchBot(botKey, el) {
+      // Update tab highlighting
+      tabs.forEach(tab => tab.classList.remove('active'));
       el.classList.add('active');
 
-      // Show loading spinner while switching bots
-      loadingSpinner.style.display = 'block';
-      chatbotContainer.innerHTML = '';  // Clear previous bot
-
-      setTimeout(() => {
-        // Replace chatbot embed dynamically
-        chatbotContainer.innerHTML = `
-          <zapier-interfaces-chatbot-embed 
-            is-popup="false" 
-            chatbot-id="${bots[botKey]}" 
-            height="600px" 
-            width="100%">
-          </zapier-interfaces-chatbot-embed>
-        `;
-        loadingSpinner.style.display = 'none';  // Hide spinner once loaded
-      }, 1500); // Simulate a small delay for loading (you can adjust this as needed)
+      // Show selected bot, hide others
+      Object.values(bots).forEach(bot => bot.classList.remove('active'));
+      bots[botKey].classList.add('active');
     }
 
-    // Load default bot on page load
-    window.onload = () => loadBot('bb', document.querySelector('.tab.active'));
+    // Default load on page ready
+    window.onload = () => switchBot('bb', document.querySelector('.tab.active'));
   </script>
 
 </body>
