@@ -1,16 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Zapier Chatbot Embed</title>
-  <script async type="module" src="https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agent Chatbot Dashboard</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9fafb;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 1rem 2rem;
+      font-size: 1.5rem;
+    }
+
+    .tabs {
+      display: flex;
+      padding: 1rem;
+      gap: 1rem;
+      background: #e5e7eb;
+      justify-content: center;
+    }
+
+    .tab {
+      background: #2563eb;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .tab:hover {
+      background: #1d4ed8;
+    }
+
+    .tab.active {
+      background: #1d4ed8;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+
+    iframe {
+      width: 100%;
+      height: 90vh;
+      border: none;
+    }
+  </style>
 </head>
-<body style="margin:0;">
-  <zapier-interfaces-chatbot-embed
-    is-popup="false"
-    chatbot-id="cm8qsjz4z0093hn60mlmystog"
-    height="600px"
-    width="400px">
-  </zapier-interfaces-chatbot-embed>
+<body>
+
+  <header>🧠 Agent Chatbot Dashboard</header>
+
+  <div class="tabs">
+    <div class="tab active" onclick="loadBot('bb', this)">BannerBuzz - BB</div>
+    <div class="tab" onclick="loadBot('bos', this)">BestOfSigns - BOS</div>
+    <div class="tab" onclick="loadBot('cov', this)">Covers&All - COV</div>
+  </div>
+
+  <iframe id="chatbotFrame" src="https://onevoice-bannerbuzz.zapier.app/"></iframe>
+
+  <script>
+    const bots = {
+      bb: "https://onevoice-bannerbuzz.zapier.app/",
+      bos: "https://onevoice-bestofsigns.zapier.app/",
+      cov: "https://onevoice-coversandall.zapier.app/"
+    };
+
+    function loadBot(botKey, element) {
+      document.getElementById("chatbotFrame").src = bots[botKey];
+
+      // Set active tab
+      document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+      element.classList.add('active');
+    }
+  </script>
+
 </body>
 </html>
