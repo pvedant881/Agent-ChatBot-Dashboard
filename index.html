@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Agent Chatbot Dashboard</title>
+
+  <!-- Zapier Web Component Script -->
+  <script async type="module" src="https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js"></script>
+
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -46,10 +50,16 @@
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
     }
 
-    iframe {
+    #chatbotContainer {
+      display: flex;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    zapier-interfaces-chatbot-embed {
       width: 100%;
-      height: 90vh;
-      border: none;
+      max-width: 600px;
+      height: 600px;
     }
   </style>
 </head>
@@ -63,22 +73,37 @@
     <div class="tab" onclick="loadBot('cov', this)">Covers&All - COV</div>
   </div>
 
-  <iframe id="chatbotFrame" src="https://onevoice-bannerbuzz.zapier.app/"></iframe>
+  <div id="chatbotContainer">
+    <!-- Chatbot will load here -->
+  </div>
 
   <script>
+    const chatbotContainer = document.getElementById("chatbotContainer");
+
     const bots = {
-      bb: "https://onevoice-bannerbuzz.zapier.app/",
-      bos: "https://onevoice-bestofsigns.zapier.app/",
-      cov: "https://onevoice-coversandall.zapier.app/"
+      bb: "cm8qsjz4z0093hn60mlmystog",
+      bos: "cm8qyffrq006tyl60vb7qq6u5",
+      cov: "cm8qy9yth00125pb7w259dnug"
     };
 
-    function loadBot(botKey, element) {
-      document.getElementById("chatbotFrame").src = bots[botKey];
-
-      // Set active tab
+    function loadBot(botKey, el) {
+      // Switch tab highlight
       document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-      element.classList.add('active');
+      el.classList.add('active');
+
+      // Replace chatbot embed dynamically
+      chatbotContainer.innerHTML = `
+        <zapier-interfaces-chatbot-embed 
+          is-popup="false" 
+          chatbot-id="${bots[botKey]}" 
+          height="600px" 
+          width="100%">
+        </zapier-interfaces-chatbot-embed>
+      `;
     }
+
+    // Load default bot
+    window.onload = () => loadBot('bb', document.querySelector('.tab.active'));
   </script>
 
 </body>
