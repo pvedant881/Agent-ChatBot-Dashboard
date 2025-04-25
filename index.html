@@ -1,144 +1,166 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>OneVoice - Agent Chatbot Dashboard</title>
+import nest_asyncio
+nest_asyncio.apply()
 
-  <!-- Zapier Web Component Script -->
-  <script async type="module" src="https://interfaces.zapier.com/assets/web-components/zapier-interfaces/zapier-interfaces.esm.js"></script>
+from flask import Flask
 
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9fafb;
-    }
+app = Flask(__name__)
 
-    header {
-      background: #8474e4;
-      color: white;
-      padding: 1rem 2rem;
-      font-size: 1.5rem;
-      text-align: center;
-    }
+@app.route('/')
+def home():
+    html = '''
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Do You Like Me?</title>
+        <style>
+            body {
+                font-family: 'Comic Sans MS', cursive, sans-serif;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background: linear-gradient(135deg, #f48fb1, #fce4ec);
+                overflow: hidden;
+            }
 
-    .tabs {
-      display: flex;
-      padding: 1rem;
-      gap: 1rem;
-      background: #e5e7eb;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+            .heart {
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background: red;
+                transform: rotate(-45deg);
+                animation: float 6s infinite ease-in-out;
+            }
 
-    .tab {
-      background: #2563eb;
-      color: white;
-      padding: 0.75rem 1.25rem;
-      border-radius: 0.5rem;
-      cursor: pointer;
-      font-weight: 500;
-      transition: background 0.3s, box-shadow 0.3s;
-    }
+            .heart::before,
+            .heart::after {
+                content: "";
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background: red;
+                border-radius: 50%;
+            }
 
-    .tab:hover {
-      background: #1d4ed8;
-    }
+            .heart::before {
+                top: -10px;
+                left: 0;
+            }
 
-    .tab.active {
-      background: #1d4ed8;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
-    }
+            .heart::after {
+                left: 10px;
+                top: 0;
+            }
 
-    #chatbotContainer {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-      min-height: 300px;
-      background: #fff;
-      position: relative;
-    }
+            @keyframes float {
+                0% { transform: translateY(0) rotate(-45deg); opacity: 1; }
+                100% { transform: translateY(-100vh) rotate(-45deg); opacity: 0; }
+            }
 
-    zapier-interfaces-chatbot-embed {
-      width: 100%;
-      max-width: 600px;
-      height: 600px;
-      border-radius: 8px;
-      display: none;
-    }
+            #questionContainer {
+                position: relative;
+                width: 400px;
+                height: 300px;
+                background-color: #ffffff;
+                border: 2px solid #ec407a;
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                text-align: center;
+                z-index: 5;
+            }
 
-    zapier-interfaces-chatbot-embed.active {
-      display: block;
-    }
+            h2 {
+                color: #d81b60;
+                font-size: 26px;
+                margin-bottom: 40px;
+            }
 
-    @media (max-width: 600px) {
-      .tab {
-        font-size: 1rem;
-        padding: 0.5rem 1rem;
-      }
+            button {
+                position: absolute;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
 
-      zapier-interfaces-chatbot-embed {
-        height: 400px;
-      }
-    }
-  </style>
-</head>
-<body>
+            #yesBtn {
+                background-color: #66bb6a;
+                left: 250px;
+                top: 150px;
+            }
 
-  <header>OneVoice - Agent Chatbot Dashboard</header>
+            #noBtn {
+                background-color: #ef5350;
+                left: 60px;
+                top: 150px;
+            }
 
-  <div class="tabs">
-    <div class="tab active" onclick="switchBot('bb', this)">BannerBuzz - BB</div>
-    <div class="tab" onclick="switchBot('bos', this)">BestOfSigns - BOS</div>
-    <div class="tab" onclick="switchBot('cov', this)">Covers&All - COV</div>
-  </div>
+            #heartLoader {
+                margin-top: 20px;
+                font-size: 24px;
+                display: none;
+            }
 
-  <div id="chatbotContainer">
-    <!-- All bots preloaded, but only one is shown at a time -->
-    <zapier-interfaces-chatbot-embed
-      id="bot-bb"
-      chatbot-id="cm8qsjz4z0093hn60mlmystog"
-      is-popup="false"
-      class="active">
-    </zapier-interfaces-chatbot-embed>
+            #resultContainer {
+                display: none;
+                font-size: 24px;
+                color: #d81b60;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="questionContainer">
+            <h2>Do you like me? 💖</h2>
+            <button id="noBtn">No</button>
+            <button id="yesBtn">Yes</button>
+            <div id="heartLoader">❤️ Loading...</div>
+            <div id="resultContainer">Yaaay! 🥰 You're awesome!</div>
+        </div>
 
-    <zapier-interfaces-chatbot-embed
-      id="bot-bos"
-      chatbot-id="cm8qyffrq006tyl60vb7qq6u5"
-      is-popup="false">
-    </zapier-interfaces-chatbot-embed>
+        <!-- Generate animated hearts -->
+        <script>
+            for (let i = 0; i < 20; i++) {
+                const heart = document.createElement("div");
+                heart.className = "heart";
+                heart.style.left = Math.random() * window.innerWidth + "px";
+                heart.style.animationDelay = Math.random() * 5 + "s";
+                heart.style.width = heart.style.height = 10 + Math.random() * 20 + "px";
+                document.body.appendChild(heart);
+            }
 
-    <zapier-interfaces-chatbot-embed
-      id="bot-cov"
-      chatbot-id="cm8qy9yth00125pb7w259dnug"
-      is-popup="false">
-    </zapier-interfaces-chatbot-embed>
-  </div>
+            const noBtn = document.getElementById("noBtn");
+            const yesBtn = document.getElementById("yesBtn");
+            const heartLoader = document.getElementById("heartLoader");
+            const resultContainer = document.getElementById("resultContainer");
+            const questionContainer = document.getElementById("questionContainer");
 
-  <script>
-    const tabs = document.querySelectorAll('.tab');
-    const bots = {
-      bb: document.getElementById('bot-bb'),
-      bos: document.getElementById('bot-bos'),
-      cov: document.getElementById('bot-cov')
-    };
+            noBtn.addEventListener("mouseover", () => {
+                const newX = Math.floor(Math.random() * (questionContainer.offsetWidth - 80));
+                const newY = Math.floor(Math.random() * (questionContainer.offsetHeight - 60));
+                noBtn.style.left = newX + "px";
+                noBtn.style.top = newY + "px";
+            });
 
-    function switchBot(botKey, el) {
-      // Update tab highlighting
-      tabs.forEach(tab => tab.classList.remove('active'));
-      el.classList.add('active');
+            yesBtn.addEventListener("click", () => {
+                heartLoader.style.display = "block";
+                resultContainer.style.display = "none";
+                setTimeout(() => {
+                    heartLoader.style.display = "none";
+                    resultContainer.innerHTML = "💘 Yay! I like you too! 🥰💖";
+                    resultContainer.style.display = "block";
+                }, 2000);
+            });
+        </script>
+    </body>
+    </html>
+    '''
+    return html
 
-      // Show selected bot, hide others
-      Object.values(bots).forEach(bot => bot.classList.remove('active'));
-      bots[botKey].classList.add('active');
-    }
-
-    // Default load on page ready
-    window.onload = () => switchBot('bb', document.querySelector('.tab.active'));
-  </script>
-
-</body>
-</html>
+# Run Flask in notebook-friendly mode
+app.run(port=5000, debug=True, use_reloader=False)
